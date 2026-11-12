@@ -1,0 +1,8 @@
+<?php
+namespace App\Http\Controllers;
+use App\Http\Requests\SimpanObatRequest;
+use App\Models\Obat;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\View\View;
+class KatalogObatController extends Controller { public function index(Request $request):View{abort_unless($request->user()->memilikiHakAkses('obat.lihat'),403);$kataKunci=trim((string)$request->string('kata_kunci'));$obat=Obat::query()->when($kataKunci,fn($q)=>$q->where(fn($sub)=>$sub->where('nama_obat','like',"%{$kataKunci}%")->orWhere('kekuatan_obat','like',"%{$kataKunci}%")))->orderBy('nama_obat')->paginate(15)->withQueryString();return view('obat.index',compact('obat','kataKunci'));}public function create():View{abort_unless(request()->user()->memilikiHakAkses('obat.kelola'),403);return view('obat.form');}public function store(SimpanObatRequest $request):RedirectResponse{Obat::create([...$request->validated(),'status_aktif'=>$request->boolean('status_aktif',true)]);return redirect()->route('obat.index')->with('status','Obat berhasil ditambahkan ke katalog.');}public function edit(Obat $obat):View{abort_unless(request()->user()->memilikiHakAkses('obat.kelola'),403);return view('obat.form',compact('obat'));}public function update(SimpanObatRequest $request,Obat $obat):RedirectResponse{$obat->update([...$request->validated(),'status_aktif'=>$request->boolean('status_aktif')]);return redirect()->route('obat.index')->with('status','Data obat berhasil diperbarui.');}public function destroy(Obat $obat):RedirectResponse{abort_unless(request()->user()->memilikiHakAkses('obat.kelola'),403);$obat->update(['status_aktif'=>false]);return back()->with('status','Obat dinonaktifkan agar riwayat resep tetap aman.');}}

@@ -1,0 +1,2 @@
+@extends('layouts.aplikasi')
+@section('content')<div class="mx-auto max-w-4xl"><h1 class="text-3xl font-bold">Edit Pasien</h1><p class="mt-2 text-slate-500">Perbarui biodata administratif tanpa mengubah nomor rekam medis.</p><form method="POST" action="{{ route('pasien.update', $pasien) }}" class="mt-7 rounded-2xl border border-slate-200 bg-white p-6">@method('PUT')@include('pasien.form')</form></div>@endsection

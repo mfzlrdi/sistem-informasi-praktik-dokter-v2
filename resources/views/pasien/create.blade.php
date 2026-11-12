@@ -1,0 +1,2 @@
+@extends('layouts.aplikasi')
+@section('content')<div class="mx-auto max-w-4xl"><h1 class="text-3xl font-bold">Tambah Pasien</h1><p class="mt-2 text-slate-500">Masukkan biodata administratif pasien. Nomor rekam medis dibuat oleh server.</p><form method="POST" action="{{ route('pasien.store') }}" class="mt-7 rounded-2xl border border-slate-200 bg-white p-6">@include('pasien.form')</form></div>@endsection

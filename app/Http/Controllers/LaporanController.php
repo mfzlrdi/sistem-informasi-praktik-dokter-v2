@@ -1,0 +1,7 @@
+<?php
+namespace App\Http\Controllers;
+use App\Models\Kunjungan;
+use App\Models\Pasien;
+use Illuminate\Http\Request;
+use Illuminate\View\View;
+class LaporanController extends Controller { public function index(Request $r):View{abort_unless($r->user()->memilikiHakAkses('laporan.lihat'),403);$data=$r->validate(['tanggal_mulai'=>['nullable','date'],'tanggal_akhir'=>['nullable','date','after_or_equal:tanggal_mulai'],'status'=>['nullable','in:menunggu,dipanggil,sedang_konsultasi,selesai,dibatalkan'],'kata_kunci'=>['nullable','string','max:100']]);$mulai=$data['tanggal_mulai']??now()->startOfMonth()->toDateString();$akhir=$data['tanggal_akhir']??now()->toDateString();$query=Kunjungan::with('pasien')->whereBetween('tanggal_kunjungan',[$mulai,$akhir])->when($data['status']??null,fn($q,$v)=>$q->where('status_kunjungan',$v))->when($data['kata_kunci']??null,fn($q,$v)=>$q->whereHas('pasien',fn($p)=>$p->where('nama_lengkap','like',"%$v%")->orWhere('nomor_rekam_medis','like',"%$v%")))->orderByDesc('tanggal_kunjungan')->orderBy('nomor_antrean');$ringkasan=['total_kunjungan'=>(clone $query)->count(),'selesai'=>(clone $query)->where('status_kunjungan','selesai')->count(),'dibatalkan'=>(clone $query)->where('status_kunjungan','dibatalkan')->count(),'pasien_unik'=>(clone $query)->distinct('id_pasien')->count('id_pasien')];$kunjungan=$query->paginate(20)->withQueryString();return view('laporan.index',compact('kunjungan','ringkasan','mulai','akhir','data'));}}
