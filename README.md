@@ -168,7 +168,7 @@ git init -b main
 git add .
 git status
 git commit -m "chore: initial project commit"
-git remote add origin https://github.com/USERNAME/NAMA-REPOSITORY.git
+git remote add origin https://github.com/mfzlrdi/sistem-informasi-praktik-dokter-v2.git
 git switch -c feature/initial-upload
 git push -u origin feature/initial-upload
 ```
